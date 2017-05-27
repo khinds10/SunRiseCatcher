@@ -15,6 +15,12 @@ digoleDriverEXE = digoleDriverFolder + "display"
 basewidth = 160
 hsize = 128
 
+# number of sunrise images to capture in the morning
+numberOfSunriseCaptures = 15
+
+# how long after sunrise to capture pictures for in minutes
+timeToCaptureMinutes = 30
+
 # optional for running the remote sunrise logger
 deviceLoggerAPI = 'YOUR API URL'
 
