@@ -38,8 +38,8 @@ def printByFontColorPosition(fontSize, fontColor, x, y, text, previousText):
 # begin the attempt to get the current weather for sunrise data (get what time the sunrises)
 count = 0
 timeNow = int(time.time())
-font = ImageFont.truetype("font.ttf", 17)
-fontSmall = ImageFont.truetype("font.ttf", 15)
+font = ImageFont.truetype("fonts/BitstreamVeraSans.ttf", 17)
+fontSmall = ImageFont.truetype("fonts/BitstreamVeraSans.ttf", 15)
 pp = pprint.PrettyPrinter(indent=4)
 camera = picamera.PiCamera()
 
@@ -80,6 +80,7 @@ while count < 10:
 #-----------------------------------------------------------------------------------------------------------------------------
 timeTillSunrise = sunriseTime - timeNow
 if (timeTillSunrise > 0):
+    print "Sleeping till Sunrise (zzz): " + timeTillSunrise
     time.sleep(timeTillSunrise)
 else:
     time.sleep(1)
@@ -108,7 +109,7 @@ while count <= settings.numberOfSunriseCaptures:
         # draw the current conditions and time on the sunrise full image
         img = Image.open(settings.projectFolder + pictureTakenFileName)
         draw = ImageDraw.Draw(img)
-        imageForecastText = 'Today: High (' + str(int(todayFeelsLikeTempHigh)) + '*F) Low (' + str(int(todayFeelsLikeTempLow)) + '*F) ' + str(todaySummary)
+        imageForecastText = 'Today: (' + str(int(todayFeelsLikeTempHigh)) + '*F)  High / (' + str(int(todayFeelsLikeTempLow)) + '*F) Low' + str(todaySummary)
         imageCurrentlyText = 'Sunrise: [' + str(pictureTaken) + ' ] / ' + str(currentSummary) + ' / Feels Like: ' + str(int(currentFeelsLikeTemp)) + '*F | ' + str(int(currentHumidity*100)) + '%'
         imageCurrentlyText2 = 'Wind Speed: ' + str(int(currentWindSpeed)) + ' mph / Cloud Cover: ' + str(int(currentCloudCover*100)) + '%' 
         draw.text( (10, 400), imageCurrentlyText , (255,255,200), font=font )
@@ -165,33 +166,58 @@ while count <= settings.numberOfSunriseCaptures:
         printByFontColorPosition("10", "252", "5", "150", pictureTaken, pictureTaken)
         pictureColorTotals[pictureTakenFileName] = len(colorsInPictures[pictureTakenFileName])
         time.sleep(secondsBetweenPictures)
+        
     except (Exception):
        time.sleep(secondsBetweenPictures)
 
-
-
-print pictureColorTotals
-
-
-
-# TODO
-
+# get the most colorful image and print it to the display / email it to user for morning email
 mostColorfulImage = ''
 for key, value in sorted(pictureColorTotals.iteritems(), key=lambda (k,v): (v,k)):
     mostColorfulImage = key
-    
-print 'Most Colorful Image: ' + mostColorfulImage
+print 'Most Colorful Sunrise Image is: ' + mostColorfulImage
 
-# get the most colorful picture and save it to the screen
+# resize the image to for digole display
+img = Image.open(settings.projectFolder + mostColorfulImage)
+img = img.resize((settings.basewidth,settings.hsize), PIL.Image.ANTIALIAS)
+img.save(settings.digoleDriverFolder + 'currentMostColorful.jpg')
 
-    # The little display tells the current time and weather (when sunrise started sunrise)
-    
-    # but save the most recent one if we're still in the middle of the capture phase
-    
-    # get the colors with the 'numpy' array - get the hex values from top 10 colors
-                
-# Email is then sent of the image with the current outdoor conditions of the picture and the forecast for the day
+# create the image data file
+file = open(settings.digoleDriverFolder + "imageData.h","w")
+file.write("const uint8_t imageData[]= {")
+file.write("0x00,0x00,0x00")
 
-    # at 30 minutes after sunrise
-    
-# need the most recent picture taken time for the function: printByFontColorPosition("10", "252", "5", "150", pictureTaken, pictureTaken)
+# loop through and build the image using BGR color scheme
+img = cv2.imread(settings.digoleDriverFolder + 'currentMostColorful.jpg')
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+x = 0
+while (x < 128):
+    y = 0
+    while (y < 160):
+        try:
+            px = img[x,y]
+            try:
+                colorCode = str(colorutils.rgb_to_hex((px[0], px[1], px[2])))
+            except:
+            hexValue = ",0x%02x" % int(px[0]/4)
+            file.write(hexValue)
+            hexValue = ",0x%02x" % int(px[1]/4)
+            file.write(hexValue)
+            hexValue = ",0x%02x" % int(px[2]/4)
+            file.write(hexValue)        
+        except:
+            pass
+        y = y + 1
+    x = x + 1
+file.write("};") 
+file.close()
+
+# compile the new image into the digole driver in C
+subprocess.call(['gcc', settings.digoleDriverFolder + 'digole.c'])
+subprocess.call(['mv', 'a.out', settings.digoleDriverFolder + 'display'])
+
+# reset screen and display image
+resetScreen()
+
+# display the image w/timestamp
+subprocess.call([settings.digoleDriverEXE, 'myimage'])
+printByFontColorPosition("10", "252", "5", "150", pictureTaken, pictureTaken)
