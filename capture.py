@@ -90,37 +90,27 @@ else:
 #-----------------------------------------------------------------------------------------------------------------------------
 colorsInPictures = {}
 pictureColorTotals = {}
+cameraPictureTaken = settings.digoleDriverFolder + 'image.jpg'
 secondsBetweenPictures = int((settings.timeToCaptureMinutes * 60) / settings.numberOfSunriseCaptures)
 while count <= settings.numberOfSunriseCaptures:
     try:
         count = count + 1
 
         # capture image from camera
-        camera.capture(settings.digoleDriverFolder + 'image.jpg')
+        camera.capture(cameraPictureTaken)
 
         # save the current capture
         pictureTakenFileName = time.strftime('%l:%M%p on %b %d %Y').replace(" ", "-")
         pictureTakenFileName = 'Sunrise-' + pictureTakenFileName + '.jpg';
         pictureTaken = time.strftime('%l:%M%p on %b %d')
-        subprocess.call(['cp', settings.digoleDriverFolder + 'image.jpg', settings.projectFolder + pictureTakenFileName ])
+        subprocess.call(['cp', cameraPictureTaken, settings.projectFolder + '/sunrise-pictures/' + pictureTakenFileName ])
         colorsInPictures[pictureTakenFileName] = {}
         pictureColorTotals[pictureTakenFileName] = 0
 
-        # draw the current conditions and time on the sunrise full image
-        img = Image.open(settings.projectFolder + pictureTakenFileName)
-        draw = ImageDraw.Draw(img)
-        imageForecastText = 'Today: (' + str(int(todayFeelsLikeTempHigh)) + '*F)  High / (' + str(int(todayFeelsLikeTempLow)) + '*F) Low' + str(todaySummary)
-        imageCurrentlyText = 'Sunrise: [' + str(pictureTaken) + ' ] / ' + str(currentSummary) + ' / Feels Like: ' + str(int(currentFeelsLikeTemp)) + '*F | ' + str(int(currentHumidity*100)) + '%'
-        imageCurrentlyText2 = 'Wind Speed: ' + str(int(currentWindSpeed)) + ' mph / Cloud Cover: ' + str(int(currentCloudCover*100)) + '%' 
-        draw.text( (10, 400), imageCurrentlyText , (255,255,200), font=font )
-        draw.text( (10, 425), imageCurrentlyText2 , (255,255,200), font=font )
-        draw.text( (10, 450), imageForecastText , (200,200,200), font=fontSmall )
-        img.save(settings.projectFolder + '/sunrise-pictures/' + pictureTakenFileName)
-
         # resize the image to for digole display
-        img = Image.open(settings.digoleDriverFolder + 'image.jpg')
-        img = img.resize((settings.basewidth,settings.hsize), PIL.Image.ANTIALIAS)
-        img.save(settings.digoleDriverFolder + 'image.jpg')
+        img = Image.open(cameraPictureTaken)
+        img = img.resize((settings.basewidth, settings.hsize), PIL.Image.ANTIALIAS)
+        img.save(cameraPictureTaken)
 
         # create the image data file
         file = open(settings.digoleDriverFolder + "imageData.h","w")
@@ -128,7 +118,7 @@ while count <= settings.numberOfSunriseCaptures:
         file.write("0x00,0x00,0x00")
 
         # loop through and build the image using BGR color scheme
-        img = cv2.imread(settings.digoleDriverFolder + 'image.jpg')
+        img = cv2.imread(cameraPictureTaken)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         x = 0
         while (x < 128):
@@ -138,7 +128,7 @@ while count <= settings.numberOfSunriseCaptures:
                     px = img[x,y]
                     try:
                         colorCode = str(colorutils.rgb_to_hex((px[0], px[1], px[2])))
-                        colorsInPictures[pictureTakenFileName][colorCode] = colorsInPictures[pictureTakenFileName][colorCode]  + 1
+                        colorsInPictures[pictureTakenFileName][colorCode] = colorsInPictures[pictureTakenFileName][colorCode] + 1
                     except:
                         colorsInPictures[pictureTakenFileName][colorCode] = 1
                     hexValue = ",0x%02x" % int(px[0]/4)
@@ -172,14 +162,16 @@ while count <= settings.numberOfSunriseCaptures:
 
 # get the most colorful image and print it to the display / email it to user for morning email
 mostColorfulImage = ''
+currentMostColorfulImage = settings.digoleDriverFolder + 'currentMostColorful.jpg'
 for key, value in sorted(pictureColorTotals.iteritems(), key=lambda (k,v): (v,k)):
     mostColorfulImage = key
+mostColorfulImage = settings.projectFolder + '/sunrise-pictures/' + mostColorfulImage
 print 'Most Colorful Sunrise Image is: ' + mostColorfulImage
 
 # resize the image to for digole display
-img = Image.open(settings.projectFolder + mostColorfulImage)
+img = Image.open(mostColorfulImage)
 img = img.resize((settings.basewidth,settings.hsize), PIL.Image.ANTIALIAS)
-img.save(settings.digoleDriverFolder + 'currentMostColorful.jpg')
+img.save(currentMostColorfulImage)
 
 # create the image data file
 file = open(settings.digoleDriverFolder + "imageData.h","w")
@@ -187,7 +179,7 @@ file.write("const uint8_t imageData[]= {")
 file.write("0x00,0x00,0x00")
 
 # loop through and build the image using BGR color scheme
-img = cv2.imread(settings.digoleDriverFolder + 'currentMostColorful.jpg')
+img = cv2.imread(currentMostColorfulImage)
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 x = 0
 while (x < 128):
@@ -221,3 +213,20 @@ resetScreen()
 # display the image w/timestamp
 subprocess.call([settings.digoleDriverEXE, 'myimage'])
 printByFontColorPosition("10", "252", "5", "150", pictureTaken, pictureTaken)
+
+# draw the current conditions and time on the sunrise full image
+img = Image.open(mostColorfulImage)
+draw = ImageDraw.Draw(img)
+imageForecastText = 'Today: (' + str(int(todayFeelsLikeTempHigh)) + '*F)  High / (' + str(int(todayFeelsLikeTempLow)) + '*F) Low' + str(todaySummary)
+imageCurrentlyText = 'Sunrise: [' + str(pictureTaken) + ' ] / ' + str(currentSummary) + ' / Feels Like: ' + str(int(currentFeelsLikeTemp)) + '*F | ' + str(int(currentHumidity*100)) + '%'
+imageCurrentlyText2 = 'Wind Speed: ' + str(int(currentWindSpeed)) + ' mph / Cloud Cover: ' + str(int(currentCloudCover*100)) + '%' 
+draw.text( (10, 400), imageCurrentlyText , (255,255,200), font=font )
+draw.text( (10, 425), imageCurrentlyText2 , (255,255,200), font=font )
+draw.text( (10, 450), imageForecastText , (200,200,200), font=fontSmall )
+img.save(mostColorfulImage)
+
+#email the most colorful image as a morning email
+
+#email calendar events
+
+# https://developers.google.com/google-apps/calendar/quickstart/python
