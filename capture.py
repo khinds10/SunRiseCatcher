@@ -94,7 +94,6 @@ cameraPictureTaken = settings.digoleDriverFolder + 'image.jpg'
 secondsBetweenPictures = int((settings.timeToCaptureMinutes * 60) / settings.numberOfSunriseCaptures)
 while count <= settings.numberOfSunriseCaptures:
     try:
-        count = count + 1
 
         # capture image from camera
         camera.capture(cameraPictureTaken)
@@ -156,7 +155,7 @@ while count <= settings.numberOfSunriseCaptures:
         printByFontColorPosition("10", "252", "5", "150", pictureTaken, pictureTaken)
         pictureColorTotals[pictureTakenFileName] = len(colorsInPictures[pictureTakenFileName])
         time.sleep(secondsBetweenPictures)
-        
+        count = count + 1
     except (Exception):
        time.sleep(secondsBetweenPictures)
 
@@ -187,9 +186,7 @@ while (x < 128):
     while (y < 160):
         try:
             px = img[x,y]
-            try:
-                colorCode = str(colorutils.rgb_to_hex((px[0], px[1], px[2])))
-            except:
+            colorCode = str(colorutils.rgb_to_hex((px[0], px[1], px[2])))
             hexValue = ",0x%02x" % int(px[0]/4)
             file.write(hexValue)
             hexValue = ",0x%02x" % int(px[1]/4)
@@ -226,6 +223,7 @@ draw.text( (10, 450), imageForecastText , (200,200,200), font=fontSmall )
 img.save(mostColorfulImage)
 
 #email the most colorful image as a morning email
+subprocess.Popen( "/usr/bin/uuencode " + mostColorfulImage + " | /usr/bin/mail -s 'Sunrise: " + time.strftime('%b %d, %Y') +"' ", shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 #email calendar events
 

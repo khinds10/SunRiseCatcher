@@ -2,12 +2,15 @@
 # Kevin Hinds http://www.kevinhinds.com
 # License: GPL 2.0
 
+# your email address (sunrise pictures mailed out)
+emailAddress = 'your-email@gmail.com'
+
 # forecast.io API key for local weather information
 weatherAPIURL = 'https://api.forecast.io/forecast/'
 weatherAPIKey = 'YOUR FORECAST.IO KEY HERE'
 
 # digole display driver settings
-projectFolder = '/home/pi/'
+projectFolder = '/home/pi/SunRiseCatcher/'
 digoleDriverFolder = projectFolder + 'display/'
 digoleDriverEXE = digoleDriverFolder + "display"
 
