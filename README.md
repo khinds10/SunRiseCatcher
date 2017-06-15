@@ -119,3 +119,34 @@ Add the following lines to have your raspberrypi automatically connect to your h
 >uncomment the following line:
 >
 >_syntax on_
+
+**Install the SSMTP mail program to gmail your sunrise pictures**
+
+>$ `sudo apt-get update && apt-get install ssmtp`
+
+>$ `sudo apt-get install sharutils`
+
+**Edit the SSMTP config**
+
+>$ `sudo vi /etc/ssmtp/ssmtp.conf`
+
+>comment out: `mailhub=mail`
+>comment out: `FromLineOverride=YES`
+
+>Add the following lines to the end of the file
+>
+>`AuthUser=your-gmail-address@gmail.com`
+>`AuthPass=YOUR GMAIL PASSWORD`
+>`FromLineOverride=YES`
+>`mailhub=smtp.gmail.com:587`
+>`UseSTARTTLS=YES`
+
+**The emailing to yourself using the installed command**
+>$ `echo "This is a test" | mail -s "Test" your-gmail-address@gmail.com`
+
+**Run Daily at 4am (via crontab)**
+
+Add the following line to your PI crontab to run the capture program starting at 4am
+
+>$ `crontab -e`
+>`00 4 * * * python /home/pi/SunRiseCatcher/capture.py`

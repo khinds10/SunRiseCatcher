@@ -150,16 +150,17 @@ while count <= settings.numberOfSunriseCaptures:
         # reset screen and display image
         resetScreen()
 
-        # display the image w/timestamp
+        # display the image w/timestamp on digole display
         subprocess.call([settings.digoleDriverEXE, 'myimage'])
         printByFontColorPosition("10", "252", "5", "150", pictureTaken, pictureTaken)
         pictureColorTotals[pictureTakenFileName] = len(colorsInPictures[pictureTakenFileName])
         time.sleep(secondsBetweenPictures)
         count = count + 1
+        
     except (Exception):
        time.sleep(secondsBetweenPictures)
 
-# get the most colorful image and print it to the display / email it to user for morning email
+# get the most colorful image and display it on the digole display / email it to user for morning email
 mostColorfulImage = ''
 currentMostColorfulImage = settings.digoleDriverFolder + 'currentMostColorful.jpg'
 for key, value in sorted(pictureColorTotals.iteritems(), key=lambda (k,v): (v,k)):
@@ -223,8 +224,4 @@ draw.text( (10, 450), imageForecastText , (200,200,200), font=fontSmall )
 img.save(mostColorfulImage)
 
 #email the most colorful image as a morning email
-subprocess.Popen( "/usr/bin/uuencode " + mostColorfulImage + " | /usr/bin/mail -s 'Sunrise: " + time.strftime('%b %d, %Y') +"' ", shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-#email calendar events
-
-# https://developers.google.com/google-apps/calendar/quickstart/python
+subprocess.Popen( "/usr/bin/uuencode " + mostColorfulImage + " | /usr/bin/mail -s 'Sunrise: " + time.strftime('%b %d, %Y') +"' " + settings.emailAddress, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
