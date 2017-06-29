@@ -149,4 +149,4 @@ Add the following lines to have your raspberrypi automatically connect to your h
 Add the following line to your PI crontab to run the capture program starting at 4am
 
 >$ `crontab -e`
->`00 4 * * * python /home/pi/SunRiseCatcher/capture.py`
+>`0  4  *  *  *  python /home/pi/SunRiseCatcher/capture.py > /home/pi/SunRiseCatcher/capture.out`
