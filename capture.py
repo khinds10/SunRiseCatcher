@@ -42,7 +42,9 @@ font = ImageFont.truetype("fonts/BitstreamVeraSans.ttf", 17)
 fontSmall = ImageFont.truetype("fonts/BitstreamVeraSans.ttf", 15)
 pp = pprint.PrettyPrinter(indent=4)
 camera = picamera.PiCamera()
-
+camera.vflip = True
+camera.hflip = True
+        
 # current weather values
 weatherInfo = None
 sunriseTime = ''
@@ -68,8 +70,8 @@ while count < 10:
         currentSummary = weatherInfo['currently']['summary']
         currentWindSpeed = weatherInfo['currently']['windSpeed']
         currentCloudCover = weatherInfo['currently']['cloudCover']
-        todayFeelsLikeTempHigh = weatherInfo['daily']['data'][0]['temperatureMin']
-        todayFeelsLikeTempLow = weatherInfo['daily']['data'][0]['temperatureMax']
+        todayFeelsLikeTempHigh = weatherInfo['daily']['data'][0]['temperatureMax']
+        todayFeelsLikeTempLow = weatherInfo['daily']['data'][0]['temperatureMin']
         todaySummary = weatherInfo['hourly']['summary']
         break
     except (Exception):
@@ -152,7 +154,7 @@ while count <= settings.numberOfSunriseCaptures:
 
         # display the image w/timestamp on digole display
         subprocess.call([settings.digoleDriverEXE, 'myimage'])
-        printByFontColorPosition("10", "252", "5", "150", pictureTaken, pictureTaken)
+        printByFontColorPosition("10", "252", "5", "375", pictureTaken, pictureTaken)
         pictureColorTotals[pictureTakenFileName] = len(colorsInPictures[pictureTakenFileName])
         time.sleep(secondsBetweenPictures)
         count = count + 1
@@ -210,13 +212,13 @@ resetScreen()
 
 # display the image w/timestamp
 subprocess.call([settings.digoleDriverEXE, 'myimage'])
-printByFontColorPosition("10", "252", "5", "150", pictureTaken, pictureTaken)
+printByFontColorPosition("10", "252", "5", "375", pictureTaken, pictureTaken)
 
 # draw the current conditions and time on the sunrise full image
 img = Image.open(mostColorfulImage)
 draw = ImageDraw.Draw(img)
-imageForecastText = 'Today: (' + str(int(todayFeelsLikeTempHigh)) + '*F)  High / (' + str(int(todayFeelsLikeTempLow)) + '*F) Low' + str(todaySummary)
-imageCurrentlyText = 'Sunrise: [' + str(pictureTaken) + ' ] / ' + str(currentSummary) + ' / Feels Like: ' + str(int(currentFeelsLikeTemp)) + '*F | ' + str(int(currentHumidity*100)) + '%'
+imageForecastText = 'Today: (' + str(int(todayFeelsLikeTempHigh)) + '*F)  High / (' + str(int(todayFeelsLikeTempLow)) + '*F) Low / ' + str(todaySummary)
+imageCurrentlyText = 'Sunrise @ [' + str(pictureTaken) + '] / ' + str(currentSummary) + ' / Feels Like: ' + str(int(currentFeelsLikeTemp)) + '*F [' + str(int(currentHumidity*100)) + '%]'
 imageCurrentlyText2 = 'Wind Speed: ' + str(int(currentWindSpeed)) + ' mph / Cloud Cover: ' + str(int(currentCloudCover*100)) + '%' 
 draw.text( (10, 400), imageCurrentlyText , (255,255,200), font=font )
 draw.text( (10, 425), imageCurrentlyText2 , (255,255,200), font=font )
@@ -224,4 +226,4 @@ draw.text( (10, 450), imageForecastText , (200,200,200), font=fontSmall )
 img.save(mostColorfulImage)
 
 #email the most colorful image as a morning email
-subprocess.Popen( "/usr/bin/uuencode " + mostColorfulImage + " | /usr/bin/mail -s 'Sunrise: " + time.strftime('%b %d, %Y') +"' " + settings.emailAddress, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+subprocess.Popen( "/usr/bin/uuencode " + mostColorfulImage + " sunrise.jpg | /usr/bin/mail -s 'Sunrise: " + time.strftime('%b %d, %Y') +"' " + settings.emailAddress, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
