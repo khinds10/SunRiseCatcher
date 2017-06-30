@@ -38,8 +38,8 @@ def printByFontColorPosition(fontSize, fontColor, x, y, text, previousText):
 # begin the attempt to get the current weather for sunrise data (get what time the sunrises)
 count = 0
 timeNow = int(time.time())
-font = ImageFont.truetype("fonts/BitstreamVeraSans.ttf", 17)
-fontSmall = ImageFont.truetype("fonts/BitstreamVeraSans.ttf", 15)
+font = ImageFont.truetype("/home/pi/SunRiseCatcher/fonts/BitstreamVeraSans.ttf", 17)
+fontSmall = ImageFont.truetype("/home/pi/SunRiseCatcher/fonts/BitstreamVeraSans.ttf", 15)
 pp = pprint.PrettyPrinter(indent=4)
 camera = picamera.PiCamera()
 camera.vflip = True
