@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Kevin Hinds http://www.kevinhinds.com
 # License: GPL 2.0
-import time, json, string, cgi, subprocess, json, PIL, cv2, subprocess, colorutils, pprint
+import time, json, string, cgi, subprocess, json, PIL, cv2, subprocess, colorutils, pprint, os
 import picamera
 from datetime import datetime
 import numpy as np
@@ -10,6 +10,9 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 from operator import itemgetter
+
+# set directory for the script to run locally for GCC commands
+os.chdir("/home/pi/SunRiseCatcher")
 
 def resetScreen():
     """clear and rotate screen"""
@@ -82,7 +85,7 @@ while count < 10:
 #-----------------------------------------------------------------------------------------------------------------------------
 timeTillSunrise = sunriseTime - timeNow
 if (timeTillSunrise > 0):
-    print "Sleeping till Sunrise (zzz): " + timeTillSunrise
+    print "Sleeping till Sunrise (zzz): " + str(timeTillSunrise) + " seconds"
     time.sleep(timeTillSunrise)
 else:
     time.sleep(1)
@@ -94,6 +97,8 @@ colorsInPictures = {}
 pictureColorTotals = {}
 cameraPictureTaken = settings.digoleDriverFolder + 'image.jpg'
 secondsBetweenPictures = int((settings.timeToCaptureMinutes * 60) / settings.numberOfSunriseCaptures)
+sunriseOccuredTime = datetime.fromtimestamp(sunriseTime)
+sunriseOccuredTime = sunriseOccuredTime.strftime('%l:%M%p on %b %d %Y')
 while count <= settings.numberOfSunriseCaptures:
     try:
 
@@ -103,7 +108,7 @@ while count <= settings.numberOfSunriseCaptures:
         # save the current capture
         pictureTakenFileName = time.strftime('%l:%M%p on %b %d %Y').replace(" ", "-")
         pictureTakenFileName = 'Sunrise-' + pictureTakenFileName + '.jpg';
-        pictureTaken = time.strftime('%l:%M%p on %b %d')
+        pictureTaken = time.strftime('%l:%M%p on %b %d ')
         subprocess.call(['cp', cameraPictureTaken, settings.projectFolder + '/sunrise-pictures/' + pictureTakenFileName ])
         colorsInPictures[pictureTakenFileName] = {}
         pictureColorTotals[pictureTakenFileName] = 0
@@ -218,7 +223,7 @@ printByFontColorPosition("10", "252", "5", "375", pictureTaken, pictureTaken)
 img = Image.open(mostColorfulImage)
 draw = ImageDraw.Draw(img)
 imageForecastText = 'Today: (' + str(int(todayFeelsLikeTempHigh)) + '*F)  High / (' + str(int(todayFeelsLikeTempLow)) + '*F) Low / ' + str(todaySummary)
-imageCurrentlyText = 'Sunrise @ [' + str(pictureTaken) + '] / ' + str(currentSummary) + ' / Feels Like: ' + str(int(currentFeelsLikeTemp)) + '*F [' + str(int(currentHumidity*100)) + '%]'
+imageCurrentlyText = 'Sunrise @ [' + str(sunriseOccuredTime) + ' ] / ' + str(currentSummary) + ' / Feels Like: ' + str(int(currentFeelsLikeTemp)) + '*F [' + str(int(currentHumidity*100)) + '%]'
 imageCurrentlyText2 = 'Wind Speed: ' + str(int(currentWindSpeed)) + ' mph / Cloud Cover: ' + str(int(currentCloudCover*100)) + '%' 
 draw.text( (10, 400), imageCurrentlyText , (255,255,200), font=font )
 draw.text( (10, 425), imageCurrentlyText2 , (255,255,200), font=font )

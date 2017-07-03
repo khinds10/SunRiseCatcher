@@ -1,4 +1,4 @@
-# SunRise Catcher
+# SunRise Catcher - Daily Sunrise Capturing Device
 
 #### Flashing RaspberriPi Hard Disk / Install Required Software (Using Ubuntu Linux)
 
@@ -120,6 +120,12 @@ Add the following lines to have your raspberrypi automatically connect to your h
 >
 >_syntax on_
 
+**Clone SunRise repository**
+
+`$ cd ~`
+
+`$ https://github.com/khinds10/SunRiseCatcher.git`
+
 **Install the SSMTP mail program to gmail your sunrise pictures**
 
 >$ `sudo apt-get update && apt-get install ssmtp`
@@ -141,8 +147,71 @@ Add the following lines to have your raspberrypi automatically connect to your h
 >`mailhub=smtp.gmail.com:587`
 >`UseSTARTTLS=YES`
 
-**The emailing to yourself using the installed command**
+**Test emailing to yourself using the installed command**
 >$ `echo "This is a test" | mail -s "Test" your-gmail-address@gmail.com`
+
+## Supplies Needed
+
+**Digole 1.8" Serial:UART/I2C/SPI True Color TFT LCD 160x128 Display Module for Arduino/PIC/AVR/PI**
+![Digole Display](https://raw.githubusercontent.com/khinds10/SunRiseCatcher/master/construction/digole.jpg "Digole Display")
+
+**RaspberriPi Zero (W Model w/ built in wireless)**
+![PiZero W](https://raw.githubusercontent.com/khinds10/SunRiseCatcher/master/construction/pizero.jpg "PiZero W")
+
+## Build and wire the device
+
+**Prepare the Digole Display for i2C**
+
+On the back of the Digole Display, solder the jumper to assign the display to use the i2c protocol 
+
+![Digole Display Back](https://raw.githubusercontent.com/khinds10/SunRiseCatcher/master/construction/display-back.png "Digole Display Back")
+
+**Digole Display**
+
+Connect the display to the RPi as follows using the below diagram
+
+> GND -> GND
+>
+> DATA -> SDA
+>
+> CLK -> SCL
+>
+> VCC -> 3V
+
+![Digole Wiring ](https://raw.githubusercontent.com/khinds10/SunRiseCatcher/master/construction/wiring-diagram.png "Digole Wiring")
+
+## Print the Project Enclosure
+
+Using a 3D printer print the enclosure files included in the 'enclosure/' folder. .x3g files are MakerBot compatible. You can also use the .stl and .blend (Blender Program) files to edit and create your own improvements to the design.
+
+## Assembly
+
+Put the camera and the pizero in the case, attach the front panel to cover any marks from the printing process
+
+![Assemble Unit](https://raw.githubusercontent.com/khinds10/SunRiseCatcher/master/construction/assemble-unit.png "Assemble Unit")
+
+Glue the display to the front panel of the display box and put the wiring through the back hole
+
+![Mount Display](https://raw.githubusercontent.com/khinds10/SunRiseCatcher/master/construction/wire-display.png "Mount Display")
+
+Mount the display in an eastern facing window
+
+![Mount Display](https://raw.githubusercontent.com/khinds10/SunRiseCatcher/master/construction/mount-display.png "Mount Display")
+
+**Change your settings.py to match your personal preferences**
+
+`settings.py`
+
+> emailAddress = 'your-email@gmail.com'
+>
+> weatherAPIURL = 'https://api.forecast.io/forecast/'
+> weatherAPIKey = 'YOUR FORECAST.IO KEY HERE'
+>
+> numberOfSunriseCaptures = 15
+> timeToCaptureMinutes = 30
+
+> latitude = 42.4152778
+> longitude = -71.1569444
 
 **Run Daily at 4am (via crontab)**
 
@@ -150,3 +219,5 @@ Add the following line to your PI crontab to run the capture program starting at
 
 >$ `crontab -e`
 >`0  4  *  *  *  python /home/pi/SunRiseCatcher/capture.py > /home/pi/SunRiseCatcher/capture.out`
+
+### FINISHED!
