@@ -223,8 +223,8 @@ printByFontColorPosition("10", "252", "5", "375", pictureTaken, pictureTaken)
 img = Image.open(mostColorfulImage)
 draw = ImageDraw.Draw(img)
 imageForecastText = 'Today: (' + str(int(todayFeelsLikeTempHigh)) + '*F)  High / (' + str(int(todayFeelsLikeTempLow)) + '*F) Low / ' + str(todaySummary)
-imageCurrentlyText = 'Sunrise @ [' + str(sunriseOccuredTime) + ' ] / ' + str(currentSummary) + ' / Feels Like: ' + str(int(currentFeelsLikeTemp)) + '*F [' + str(int(currentHumidity*100)) + '%]'
-imageCurrentlyText2 = 'Wind Speed: ' + str(int(currentWindSpeed)) + ' mph / Cloud Cover: ' + str(int(currentCloudCover*100)) + '%' 
+imageCurrentlyText = 'Sunrise Conditions @ [' + str(sunriseOccuredTime) + ' ] / ' + str(currentSummary) + ' / Felt Like: ' + str(int(currentFeelsLikeTemp)) + '*F [' + str(int(currentHumidity*100)) + '%]'
+imageCurrentlyText2 = 'Wind Speed was: ' + str(int(currentWindSpeed)) + ' mph / Cloud Cover was: ' + str(int(currentCloudCover*100)) + '%' 
 draw.text( (10, 400), imageCurrentlyText , (255,255,200), font=font )
 draw.text( (10, 425), imageCurrentlyText2 , (255,255,200), font=font )
 draw.text( (10, 450), imageForecastText , (200,200,200), font=fontSmall )
