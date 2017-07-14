@@ -41,8 +41,8 @@ def printByFontColorPosition(fontSize, fontColor, x, y, text, previousText):
 # begin the attempt to get the current weather for sunrise data (get what time the sunrises)
 count = 0
 timeNow = int(time.time())
-font = ImageFont.truetype("/home/pi/SunRiseCatcher/fonts/BitstreamVeraSans.ttf", 17)
-fontSmall = ImageFont.truetype("/home/pi/SunRiseCatcher/fonts/BitstreamVeraSans.ttf", 15)
+font = ImageFont.truetype("/home/pi/SunRiseCatcher/fonts/BitstreamVeraSans.ttf", 16)
+fontSmall = ImageFont.truetype("/home/pi/SunRiseCatcher/fonts/BitstreamVeraSans.ttf", 14)
 pp = pprint.PrettyPrinter(indent=4)
 camera = picamera.PiCamera()
 camera.vflip = True
@@ -222,9 +222,9 @@ printByFontColorPosition("10", "252", "5", "375", pictureTaken, pictureTaken)
 # draw the current conditions and time on the sunrise full image
 img = Image.open(mostColorfulImage)
 draw = ImageDraw.Draw(img)
-imageForecastText = 'Today: (' + str(int(todayFeelsLikeTempHigh)) + '*F)  High / (' + str(int(todayFeelsLikeTempLow)) + '*F) Low / ' + str(todaySummary)
 imageCurrentlyText = 'Sunrise Conditions @ [' + str(sunriseOccuredTime) + ' ] / ' + str(currentSummary) + ' / Felt Like: ' + str(int(currentFeelsLikeTemp)) + '*F [' + str(int(currentHumidity*100)) + '%]'
 imageCurrentlyText2 = 'Wind Speed was: ' + str(int(currentWindSpeed)) + ' mph / Cloud Cover was: ' + str(int(currentCloudCover*100)) + '%' 
+imageForecastText = 'Today\'s Forecast: High (' + str(int(todayFeelsLikeTempHigh)) + '*F) / Low (' + str(int(todayFeelsLikeTempLow)) + '*F) / ' + str(todaySummary)
 draw.text( (10, 400), imageCurrentlyText , (255,255,200), font=font )
 draw.text( (10, 425), imageCurrentlyText2 , (255,255,200), font=font )
 draw.text( (10, 450), imageForecastText , (200,200,200), font=fontSmall )
