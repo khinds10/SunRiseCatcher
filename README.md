@@ -1,4 +1,11 @@
-# SunRise Catcher - Daily Sunrise Capturing Device
+# Daily SunRise Catcher
+#### Takes many pictures for you at sunrise, capturing the most colorful.
+
+**Bedside Display**
+![Table Top Display](https://raw.githubusercontent.com/khinds10/SunRiseCatcher/master/construction/tableTopDisplay.jpg "Table Top Display")
+
+**Morning Email**
+![Morning Email](https://raw.githubusercontent.com/khinds10/SunRiseCatcher/master/construction/morningEmail.jpg "Morning Email")
 
 #### Flashing RaspberriPi Hard Disk / Install Required Software (Using Ubuntu Linux)
 
